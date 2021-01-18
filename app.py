@@ -92,13 +92,22 @@ def callback():
 
     return redirect(url_for('home'))
 
-@app.route('/data')
-def data():
-    return spotify_api_query(f"{SPOTIFY_API_URL}/me/playlists", 'GET')
 
 @app.route('/home')
 def home():
     return render_template("home.html")
+
+@app.route('/data/playlist_home')
+def data():
+    return spotify_api_query(f"{SPOTIFY_API_URL}/me/playlists", 'GET')
+
+@app.route('/playlist/<playlistid>')
+def show_playlist(playlistid):
+    return render_template("playlist.html")
+
+@app.route('/data/<playlistid>')
+def data_playlist(playlistid):
+    return spotify_api_query(f"{SPOTIFY_API_URL}/playlists/{playlistid}")
 
 if __name__ == "__main__":
     app.run(debug=True)
