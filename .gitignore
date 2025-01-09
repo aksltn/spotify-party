@@ -3,3 +3,6 @@ config.json
 
 # Python Virtual Environment
 venv 
+
+# Add .env to .gitignore
+.env
