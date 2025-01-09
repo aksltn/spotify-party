@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Hi <u>{{ user_info['display_name'] }}</u></h1>
+
+<h3>Your top 5 tracks</h3>
+<ul>
+    {% for track in top_tracks['items'] %}
+    <li>
+        <strong>{{ track['name'] }}</strong> by {{ track['artists'][0]['name'] }}
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

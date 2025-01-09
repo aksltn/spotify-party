@@ -1,26 +1,33 @@
-from flask import Flask, jsonify, redirect, request, session
+import spotipy
+import os
+
+from flask import Flask, jsonify, redirect, request, session, render_template
 from dotenv import load_dotenv
 from spotipy.oauth2 import SpotifyOAuth
-import os
-# Flask for building webapp
-# jsonify converts Python dict -> JSON format (API handling)
-# redirect redirects, request accesses request data (query parameters) to handle callback, session stores users authentication token
-# load_dotenv loads environment variables (and os needed to interact with operating system, specifically in this case to read .env)
 
 app = Flask(__name__)
 load_dotenv()
 
 sp_oauth = SpotifyOAuth(
-    client_id=os.getenv("SPOTIPY_CLIENT_ID"),
-    client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
-    redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
-    scope="user-library-read user-top-read" # Modify scope as needed later
+    client_id=os.getenv('SPOTIPY_CLIENT_ID'),
+    client_secret=os.getenv('SPOTIPY_CLIENT_SECRET'),
+    redirect_uri=os.getenv('SPOTIPY_REDIRECT_URI'),
+    scope='user-library-read user-top-read' # Modify scope as needed later
 )
 
 @app.route('/')
 def home():
-    return jsonify(message="test")
-    # returns JSON response (instead of HTML), used for API endpoints
+    token_info = session.get('token_info', None)
+    if not token_info:
+        return redirect('/auth')
+        # TO-DO :: error handling in case user is not authenticated, issues fetching data from spotipy/Spotify API
+    
+    sp = spotipy.Spotify(auth=token_info['access_token'])
+    user_info = sp.current_user()
+    top_tracks = sp.current_user_top_tracks(limit=5)
+
+    # return jsonify(user_info=user_info, top_tracks=top_tracks)
+    return render_template('dash.html', user_info=user_info, top_tracks=top_tracks)
 
 @app.route('/auth')
 def authenticate():
