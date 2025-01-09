@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+<div class="profile-blob">
+    {% if user_info['images'] %}
+        <img src="{{ user_info['images'][0]['url'] }}" alt="pfp">
+    {% else %}
+        <img src="https://img.freepik.com/premium-photo/colorful-spiral-galaxy-with-stars-bright-light-generative-ai_902846-37059.jpg" alt="pfp">
+    {% endif %}
+</div>
+
 <h1>Hi <u>{{ user_info['display_name'] }}</u></h1>
 
 <h3>Your top 5 tracks</h3>
@@ -12,4 +21,5 @@
     {% endfor %}
 </ul>
 
+<!-- <script src="{{ url_for('static', filename='js/blob.js') }}"></script> -->
 {% endblock %}

@@ -1,5 +1,6 @@
 import spotipy
 import os
+import json
 
 from flask import Flask, jsonify, redirect, request, session, render_template
 from dotenv import load_dotenv
@@ -25,6 +26,8 @@ def home():
     sp = spotipy.Spotify(auth=token_info['access_token'])
     user_info = sp.current_user()
     top_tracks = sp.current_user_top_tracks(limit=5)
+
+    print("user info", json.dumps(user_info, indent=4))
 
     # return jsonify(user_info=user_info, top_tracks=top_tracks)
     return render_template('dash.html', user_info=user_info, top_tracks=top_tracks)
