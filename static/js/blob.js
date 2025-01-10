@@ -1,23 +1,15 @@
-function getRandomBlobShape() {
-    const shapeType = Math.random() > 0.5 ? 'polygon' : 'ellipse';
-    const points = [];
+function applyRandomDelay() {
+    const songCards = document.querySelectorAll('.album-art');
+    
+    songCards.forEach(card => {
+        // Generate a random delay between 0s and 2s
+        const randomDelay = Math.random() * 3; // Random delay in seconds
 
-    if (shapeType == 'polygon') {
-        for (let i = 0; i < 5; i++) {
-            points.push(`${Math.floor(Math.random() * 101)}% ${Math.floor(Math.random() * 101)}%`);
-        }
-        return `polygon(${points.join(', ')})`;
-    } else {
-        const xRad = Math.floor(Math.random() * 50) + 30;
-        const yRad = Math.floor(Math.random() * 50) + 30;
-        return `ellipse(${xRad}% ${yRad}% at 50% 50%)`;
-    }
+        // Apply the random delay as an inline style
+        card.style.animationDelay = `${randomDelay}s`;
+    });
 }
 
-function applyRandomBlobShape() {
-    const pfpBlob = document.querySelector('.profile-blob');
-    pfpBlob.style.transition = 'clip-path 1s ease-in-out';
-    pfpBlob.style.clipPath = getRandomBlobShape();
+window.onload = function() {
+    applyRandomDelay();
 }
-
-setInterval(applyRandomBlobShape, 3000);

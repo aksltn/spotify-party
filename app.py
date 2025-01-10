@@ -1,6 +1,7 @@
 import spotipy
 import os
 import json
+import time
 
 from flask import Flask, jsonify, redirect, request, session, render_template
 from dotenv import load_dotenv
@@ -18,19 +19,26 @@ sp_oauth = SpotifyOAuth(
 
 @app.route('/')
 def home():
-    token_info = session.get('token_info', None)
-    if not token_info:
-        return redirect('/auth')
-        # TO-DO :: error handling in case user is not authenticated, issues fetching data from spotipy/Spotify API
-    
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    user_info = sp.current_user()
-    top_tracks = sp.current_user_top_tracks(limit=5)
+    try:
+        token_info = session.get('token_info', None)
+        if not token_info:
+            return redirect('/auth')
+            # TO-DO :: error handling in case user is not authenticated, issues fetching data from spotipy/Spotify API
+        
+        if token_expired(token_info):  # Define is_token_expired() elsewhere
+            return redirect('/auth')
 
-    print("user info", json.dumps(user_info, indent=4))
+        sp = spotipy.Spotify(auth=token_info['access_token'])
+        user_info = sp.current_user()
+        top_tracks = sp.current_user_top_tracks(limit=5)
 
-    # return jsonify(user_info=user_info, top_tracks=top_tracks)
-    return render_template('dash.html', user_info=user_info, top_tracks=top_tracks)
+        print("user info", json.dumps(user_info, indent=4))
+        print("tracks", json.dumps(top_tracks, indent=4) )
+
+        # return jsonify(user_info=user_info, top_tracks=top_tracks)
+        return render_template('dash.html', user_info=user_info, top_tracks=top_tracks['items'])
+    except Exception as e:
+        return "Error sorry" # fix later too lazy now
 
 @app.route('/auth')
 def authenticate():
@@ -44,6 +52,9 @@ def callback():
     session['token_info'] = token_info # store access token in session
     return redirect('/')
 
+
+def token_expired(t):
+    return t['expires_at'] < int(time.time())
 
 app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
